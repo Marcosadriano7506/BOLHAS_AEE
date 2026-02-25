@@ -1,20 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Bolha AEE</title>
+  <link rel="stylesheet" href="style.css">
+</head>
 <body>
 
+  <!-- TELA INICIAL -->
   <div id="startScreen">
     <h1>Bolha AEE</h1>
 
     <input type="text" id="studentName" placeholder="Nome do estudante" />
 
     <select id="levelSelect">
-      <option value="1">Nível 1 - Fácil</option>
-      <option value="2">Nível 2 - Médio</option>
-      <option value="3">Nível 3 - Avançado</option>
+      <option value="1">Nível 1 - Fácil (Grandes e Lentas)</option>
+      <option value="2">Nível 2 - Médio (Médias e Lentas)</option>
+      <option value="3">Nível 3 - Avançado (Médias e Rápidas)</option>
     </select>
 
     <button id="startButton">Iniciar</button>
   </div>
 
+  <!-- CANVAS DO JOGO -->
   <canvas id="gameCanvas"></canvas>
 
+  <!-- SUPABASE -->
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+    const supabase = createClient(
+      'https://pavclibobxdcpjsycttz.supabase.co',
+      'sb_publishable_4t4ty2IxrWKv_UQdKzl6FA_44l4p3d7'
+    );
+
+    window.supabase = supabase;
+  </script>
+
+  <!-- SCRIPT DO JOGO -->
   <script src="script.js"></script>
+
 </body>
+</html>
