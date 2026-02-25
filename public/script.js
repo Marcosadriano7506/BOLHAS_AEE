@@ -14,18 +14,48 @@ const historyTableBody = document.querySelector("#historyTable tbody");
 
 const studentNameInput = document.getElementById("studentName");
 const levelSelect = document.getElementById("levelSelect");
+const schoolSelect = document.getElementById("schoolSelect");
+
 const scoreDisplay = document.getElementById("scoreDisplay");
 const timeDisplay = document.getElementById("timeDisplay");
+const hud = document.getElementById("hud");
 
 // VARIÁVEIS
 let bubbles = [];
 let level = 1;
 let studentName = "";
+let selectedSchoolId = null;
+let selectedSchoolName = "";
 let gameStarted = false;
 let score = 0;
 let gameInterval;
 let gameTimer;
 let timeLeft = 60;
+
+// ==========================
+// CARREGAR ESCOLAS
+// ==========================
+async function loadSchools() {
+
+  const { data, error } = await window.supabase
+    .from('escolas')
+    .select('*')
+    .order('nome', { ascending: true });
+
+  if (error) {
+    alert("Erro ao carregar escolas.");
+    return;
+  }
+
+  schoolSelect.innerHTML = '<option value="">Selecione a Escola</option>';
+
+  data.forEach(escola => {
+    const option = document.createElement("option");
+    option.value = escola.id;
+    option.textContent = escola.nome;
+    schoolSelect.appendChild(option);
+  });
+}
 
 // ==========================
 // CRIAR BOLHAS
@@ -57,7 +87,7 @@ function createBubble() {
 }
 
 // ==========================
-// DESENHAR BOLHAS 3D
+// DESENHAR BOLHAS
 // ==========================
 function drawBubbles() {
 
@@ -149,23 +179,22 @@ async function endGame() {
   clearInterval(gameInterval);
   clearInterval(gameTimer);
 
-  const { error } = await window.supabase
+  await window.supabase
     .from('sessoes')
     .insert([
       {
         nome: studentName,
         pontuacao: score,
-        data: new Date()
+        data: new Date(),
+        escola_id: selectedSchoolId
       }
     ]);
 
-  if (error) {
-    alert("Erro ao salvar no banco.");
-  } else {
-    alert("Sessão finalizada!\nPontuação: " + score);
-  }
+  alert("Sessão finalizada!\nPontuação: " + score);
 
+  hud.style.display = "none";
   startScreen.style.display = "flex";
+
   timeLeft = 60;
   score = 0;
   bubbles = [];
@@ -178,7 +207,12 @@ async function loadHistory() {
 
   const { data, error } = await window.supabase
     .from('sessoes')
-    .select('*')
+    .select(`
+      nome,
+      pontuacao,
+      data,
+      escolas ( nome )
+    `)
     .order('data', { ascending: false });
 
   if (error) {
@@ -192,18 +226,22 @@ async function loadHistory() {
 
     const row = document.createElement("tr");
 
-    const nome = document.createElement("td");
-    nome.textContent = sessao.nome;
+    const escolaTd = document.createElement("td");
+    escolaTd.textContent = sessao.escolas?.nome || "-";
+
+    const nomeTd = document.createElement("td");
+    nomeTd.textContent = sessao.nome;
 
     const dataTd = document.createElement("td");
     dataTd.textContent = new Date(sessao.data).toLocaleString();
 
-    const pontuacao = document.createElement("td");
-    pontuacao.textContent = sessao.pontuacao;
+    const pontuacaoTd = document.createElement("td");
+    pontuacaoTd.textContent = sessao.pontuacao;
 
-    row.appendChild(nome);
+    row.appendChild(escolaTd);
+    row.appendChild(nomeTd);
     row.appendChild(dataTd);
-    row.appendChild(pontuacao);
+    row.appendChild(pontuacaoTd);
 
     historyTableBody.appendChild(row);
   });
@@ -215,9 +253,16 @@ async function loadHistory() {
 startButton.addEventListener("click", () => {
 
   studentName = studentNameInput.value.trim();
+  selectedSchoolId = schoolSelect.value;
+  selectedSchoolName = schoolSelect.options[schoolSelect.selectedIndex]?.text;
+
+  if (!selectedSchoolId) {
+    alert("Selecione a escola.");
+    return;
+  }
 
   if (studentName === "") {
-    alert("Digite o nome do estudante");
+    alert("Digite o nome do estudante.");
     return;
   }
 
@@ -225,6 +270,7 @@ startButton.addEventListener("click", () => {
 
   startScreen.style.display = "none";
   historyScreen.style.display = "none";
+  hud.style.display = "flex";
 
   gameStarted = true;
   score = 0;
@@ -247,3 +293,8 @@ backButton.addEventListener("click", () => {
   historyScreen.style.display = "none";
   startScreen.style.display = "flex";
 });
+
+// ==========================
+// INICIALIZAÇÃO
+// ==========================
+loadSchools();
