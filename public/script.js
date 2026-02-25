@@ -4,11 +4,15 @@ const ctx = canvas.getContext("2d");
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
+// ELEMENTOS
 const startScreen = document.getElementById("startScreen");
 const startButton = document.getElementById("startButton");
 const studentNameInput = document.getElementById("studentName");
 const levelSelect = document.getElementById("levelSelect");
+const scoreDisplay = document.getElementById("scoreDisplay");
+const timeDisplay = document.getElementById("timeDisplay");
 
+// VARIÁVEIS
 let bubbles = [];
 let level = 1;
 let studentName = "";
@@ -16,8 +20,11 @@ let gameStarted = false;
 let score = 0;
 let gameInterval;
 let gameTimer;
-let timeLeft = 60; // 60 segundos
+let timeLeft = 60;
 
+// ==========================
+// CRIAR BOLHAS
+// ==========================
 function createBubble() {
 
   let radius;
@@ -44,6 +51,9 @@ function createBubble() {
   });
 }
 
+// ==========================
+// DESENHAR BOLHAS 3D
+// ==========================
 function drawBubbles() {
 
   if (!gameStarted) return;
@@ -51,12 +61,30 @@ function drawBubbles() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   bubbles.forEach((bubble, index) => {
+
     bubble.y -= bubble.speed;
+
+    // Gradiente 3D
+    let gradient = ctx.createRadialGradient(
+      bubble.x - bubble.radius / 3,
+      bubble.y - bubble.radius / 3,
+      bubble.radius / 6,
+      bubble.x,
+      bubble.y,
+      bubble.radius
+    );
+
+    gradient.addColorStop(0, "rgba(255,255,255,0.9)");
+    gradient.addColorStop(0.3, "rgba(173,216,230,0.8)");
+    gradient.addColorStop(1, "rgba(0,191,255,0.4)");
 
     ctx.beginPath();
     ctx.arc(bubble.x, bubble.y, bubble.radius, 0, Math.PI * 2);
-    ctx.strokeStyle = "white";
+    ctx.fillStyle = gradient;
+    ctx.fill();
+
     ctx.lineWidth = 2;
+    ctx.strokeStyle = "rgba(255,255,255,0.7)";
     ctx.stroke();
 
     if (bubble.y + bubble.radius < 0) {
@@ -64,14 +92,16 @@ function drawBubbles() {
     }
   });
 
-  ctx.fillStyle = "white";
-  ctx.font = "bold 22px Arial";
-  ctx.fillText("Bolhas Estouradas: " + score, 20, 40);
-  ctx.fillText("Tempo: " + timeLeft + "s", 20, 70);
+  // Atualiza HUD
+  scoreDisplay.textContent = "Bolhas: " + score;
+  timeDisplay.textContent = "Tempo: " + timeLeft + "s";
 
   requestAnimationFrame(drawBubbles);
 }
 
+// ==========================
+// CLIQUE PARA ESTOURAR
+// ==========================
 canvas.addEventListener("click", function (event) {
 
   if (!gameStarted) return;
@@ -81,6 +111,7 @@ canvas.addEventListener("click", function (event) {
   const clickY = event.clientY - rect.top;
 
   bubbles.forEach((bubble, index) => {
+
     const dx = clickX - bubble.x;
     const dy = clickY - bubble.y;
     const distance = Math.sqrt(dx * dx + dy * dy);
@@ -92,6 +123,9 @@ canvas.addEventListener("click", function (event) {
   });
 });
 
+// ==========================
+// TIMER
+// ==========================
 function startTimer() {
   gameTimer = setInterval(() => {
     timeLeft--;
@@ -102,6 +136,9 @@ function startTimer() {
   }, 1000);
 }
 
+// ==========================
+// FINALIZAR JOGO
+// ==========================
 async function endGame() {
 
   gameStarted = false;
@@ -134,6 +171,9 @@ async function endGame() {
   bubbles = [];
 }
 
+// ==========================
+// INICIAR JOGO
+// ==========================
 startButton.addEventListener("click", () => {
 
   studentName = studentNameInput.value.trim();
