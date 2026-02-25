@@ -11,15 +11,8 @@
   <div id="startScreen">
     <h1>Bolha AEE</h1>
 
-    <!-- ESCOLA -->
-    <select id="schoolSelect">
-      <option value="">Selecione a Escola</option>
-    </select>
-
-    <!-- NOME DO ALUNO -->
     <input type="text" id="studentName" placeholder="Nome do estudante" />
 
-    <!-- NÍVEL -->
     <select id="levelSelect">
       <option value="1">Nível 1 - Fácil (Grandes e Lentas)</option>
       <option value="2">Nível 2 - Médio (Médias e Lentas)</option>
@@ -27,35 +20,15 @@
     </select>
 
     <button id="startButton">Iniciar</button>
-    <button id="historyButton" class="secondaryButton">Ver Histórico</button>
   </div>
 
-  <!-- TELA DE HISTÓRICO -->
-  <div id="historyScreen" style="display:none;">
-    <h2>Histórico de Participação</h2>
-
-    <button id="backButton">Voltar</button>
-
-    <table id="historyTable">
-      <thead>
-        <tr>
-          <th>Escola</th>
-          <th>Nome</th>
-          <th>Data</th>
-          <th>Pontuação</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
-
-  <!-- HUD -->
-  <div id="hud" style="display:none;">
+  <!-- HUD (PLACAR E RELÓGIO FIXO) -->
+  <div id="hud">
     <span id="scoreDisplay">Bolhas: 0</span>
     <span id="timeDisplay">Tempo: 60s</span>
   </div>
 
-  <!-- CANVAS -->
+  <!-- CANVAS DO JOGO -->
   <canvas id="gameCanvas"></canvas>
 
   <!-- SUPABASE -->
@@ -70,7 +43,7 @@
     window.supabase = supabase;
   </script>
 
-  <!-- SCRIPT -->
+  <!-- SCRIPT DO JOGO -->
   <script src="script.js"></script>
 
 </body>
