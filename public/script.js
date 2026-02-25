@@ -36,3 +36,23 @@ function drawBubbles() {
 
 setInterval(createBubble, 1000);
 drawBubbles();
+async function testarSalvarSessao() {
+  const { data, error } = await window.supabase
+    .from('sessoes')
+    .insert([
+      {
+        pontuacao: 5,
+        nivel: "teste",
+        tempo_segundos: 20
+      }
+    ]);
+
+  if (error) {
+    console.log("ERRO:", error);
+  } else {
+    console.log("SUCESSO:", data);
+  }
+}
+
+// chama automaticamente ao carregar
+testarSalvarSessao();
