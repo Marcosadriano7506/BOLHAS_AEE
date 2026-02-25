@@ -35,10 +35,10 @@ function createBubble() {
     speed = 1;
   } else if (level == 2) {
     radius = 45;
-    speed = 1;
+    speed = 2;
   } else {
     radius = 45;
-    speed = 2;
+    speed = 4;
   }
 
   let x = Math.random() * (canvas.width - radius * 2) + radius;
