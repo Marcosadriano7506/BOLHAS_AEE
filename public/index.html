@@ -6,7 +6,16 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
+  const supabase = createClient(
+    'https://pavclibobxdcpjsycttz.supabase.co',
+    'sb_publishable_4t4ty2IxrWKv_UQdKzl6FA_44l4p3d7'
+  );
+
+  window.supabase = supabase;
+</script>
   <canvas id="gameCanvas"></canvas>
 
   <script src="script.js"></script>
