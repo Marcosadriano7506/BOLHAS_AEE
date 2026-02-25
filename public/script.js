@@ -7,6 +7,11 @@ canvas.height = window.innerHeight;
 // ELEMENTOS
 const startScreen = document.getElementById("startScreen");
 const startButton = document.getElementById("startButton");
+const historyButton = document.getElementById("historyButton");
+const historyScreen = document.getElementById("historyScreen");
+const backButton = document.getElementById("backButton");
+const historyTableBody = document.querySelector("#historyTable tbody");
+
 const studentNameInput = document.getElementById("studentName");
 const levelSelect = document.getElementById("levelSelect");
 const scoreDisplay = document.getElementById("scoreDisplay");
@@ -64,7 +69,6 @@ function drawBubbles() {
 
     bubble.y -= bubble.speed;
 
-    // Gradiente 3D
     let gradient = ctx.createRadialGradient(
       bubble.x - bubble.radius / 3,
       bubble.y - bubble.radius / 3,
@@ -92,7 +96,6 @@ function drawBubbles() {
     }
   });
 
-  // Atualiza HUD
   scoreDisplay.textContent = "Bolhas: " + score;
   timeDisplay.textContent = "Tempo: " + timeLeft + "s";
 
@@ -146,7 +149,6 @@ async function endGame() {
   clearInterval(gameInterval);
   clearInterval(gameTimer);
 
-  // SALVAR NO SUPABASE
   const { error } = await window.supabase
     .from('sessoes')
     .insert([
@@ -158,13 +160,11 @@ async function endGame() {
     ]);
 
   if (error) {
-    console.log("Erro ao salvar:", error);
     alert("Erro ao salvar no banco.");
   } else {
     alert("Sessão finalizada!\nPontuação: " + score);
   }
 
-  // Reset
   startScreen.style.display = "flex";
   timeLeft = 60;
   score = 0;
@@ -172,7 +172,45 @@ async function endGame() {
 }
 
 // ==========================
-// INICIAR JOGO
+// HISTÓRICO
+// ==========================
+async function loadHistory() {
+
+  const { data, error } = await window.supabase
+    .from('sessoes')
+    .select('*')
+    .order('data', { ascending: false });
+
+  if (error) {
+    alert("Erro ao carregar histórico.");
+    return;
+  }
+
+  historyTableBody.innerHTML = "";
+
+  data.forEach(sessao => {
+
+    const row = document.createElement("tr");
+
+    const nome = document.createElement("td");
+    nome.textContent = sessao.nome;
+
+    const dataTd = document.createElement("td");
+    dataTd.textContent = new Date(sessao.data).toLocaleString();
+
+    const pontuacao = document.createElement("td");
+    pontuacao.textContent = sessao.pontuacao;
+
+    row.appendChild(nome);
+    row.appendChild(dataTd);
+    row.appendChild(pontuacao);
+
+    historyTableBody.appendChild(row);
+  });
+}
+
+// ==========================
+// BOTÕES
 // ==========================
 startButton.addEventListener("click", () => {
 
@@ -186,6 +224,7 @@ startButton.addEventListener("click", () => {
   level = levelSelect.value;
 
   startScreen.style.display = "none";
+  historyScreen.style.display = "none";
 
   gameStarted = true;
   score = 0;
@@ -196,4 +235,15 @@ startButton.addEventListener("click", () => {
 
   startTimer();
   drawBubbles();
+});
+
+historyButton.addEventListener("click", () => {
+  startScreen.style.display = "none";
+  historyScreen.style.display = "flex";
+  loadHistory();
+});
+
+backButton.addEventListener("click", () => {
+  historyScreen.style.display = "none";
+  startScreen.style.display = "flex";
 });
