@@ -1,7 +1,8 @@
 body {
   margin: 0;
   overflow: hidden;
-  background: linear-gradient(to top, #87CEEB, #ffffff);
+  background: linear-gradient(to top, #4facfe, #00f2fe);
+  font-family: Arial, sans-serif;
 }
 
 canvas {
@@ -33,4 +34,19 @@ canvas {
   background-color: #4CAF50;
   color: white;
   cursor: pointer;
+}
+
+#hud {
+  position: absolute;
+  top: 15px;
+  left: 20px;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 12px 20px;
+  border-radius: 12px;
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+  display: flex;
+  gap: 25px;
+  backdrop-filter: blur(6px);
 }
